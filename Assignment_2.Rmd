@@ -168,6 +168,8 @@ step(glm(is_1~., data = wine_db, family = binomial))
 
 #3.b.
 ```{r}
+#nadav
+#this is worng
 ```
 
 git test
