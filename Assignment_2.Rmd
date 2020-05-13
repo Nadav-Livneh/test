@@ -168,6 +168,7 @@ step(glm(is_1~., data = wine_db, family = binomial))
 
 #3.b.
 ```{r}
+abc<-function(x){print(5)}
 ```
 
 git test
