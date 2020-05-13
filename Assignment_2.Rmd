@@ -1,0 +1,179 @@
+---
+title: "Assignment_2"
+author: "Dan Boguslavsky"
+date: "5/12/2020"
+output: html_document
+---
+```{r}
+rm(list=ls())
+```
+
+```{r Question 1}
+#install.packages('rattle.data')
+library('rattle.data')
+wine<-rattle.data::wine
+?wine
+```
+
+#1.a.
+```{r Q-1,a}
+plot(Flavanoids~Phenols,data = wine)
+```
+It seems that indeed, Flavanoids and Phenols have some linear relationship between them.
+
+#1.b.
+```{r Q-1,b}
+```
+The model: Flavanoids = β0 + β1*Phenols + error
+in this model we assuming that the amount of Flavanoids affected by the amount of Phenols.
+Additionaly we assuming all of the basic assumption of the linear regretion.
+
+
+#1.c.
+We want to minimize the sum of residual squares. So to get those expressions we need to deriviate the sum by β0 and β1 and equal to '0',
+and then solve the equations, and find β0 and β1.
+
+There are few assumptions we must assume to make those calculations:
+1. Independence - we assume that the residuals are independent.
+2. Centered - we assume that the Expected value of the resudials is '0'. (E(res) = 0).
+3. Normality - we assume that the resudials are
+1. The relation between 'Flavanoids'  and 'Phenols' is linear.
+2. 'Flavanoids' ~ N(µ,)
+
+#1.d.
+```{r Q-1,d}
+lm.Flavanoids.Phenols<- lm(wine$Flavanoids~wine$Phenols)
+#Estimation resaults:
+predict(lm.Flavanoids.Phenols)
+#Plot + regression line:
+plot(Flavanoids~Phenols,data = wine)
+abline(coef(lm.Flavanoids.Phenols)[1:2])
+```
+
+#1.e.
+```{r Q-1,e}
+#Slope coefficient:
+coef(lm.Flavanoids.Phenols)[2:2]
+summary(lm.Flavanoids.Phenols)
+```
+The sope coefficient is significant. Be base it on the t-value of the effect - which is 22.82.
+That indicates a very significant effect. We can also be assisted by the "star" code on the left of the "summary" command - "***" means significance level of under 0.001% for the effect to be insignificant.
+
+#1.f.
+```{r Q-1,f}
+plot(density(lm.Flavanoids.Phenols$residuals),main = "Residuals",col="red")
+legend("topright", legend=c("syntatic norm dist", "residual dist"),
+           col=c("black","red"),lty=1, cex=0.7)
+set.seed(256)             
+lines(density(rnorm(1:178,0,0.5)))
+shapiro.test(lm.Flavanoids.Phenols$residuals)
+```
+
+We add normal distrabiotion line to compare it with the residual distrecution.
+Additionaly we add shapiro-wilk test in order to verifay the segnigicant the residual distrecution is normal distrebiotion.
+You can noticte the simularity in the plot and the p-value of the shapiro-wilk test is 0.0003786 (very segnigicant).
+
+#1.h.
+```{r Q-1,h}
+library("ggplot2")
+ggplot(wine, aes(x=Flavanoids, y=Phenols, color=Type)) + geom_point() + 
+```
+
+
+#1.i.
+```{r Q-1,i}
+type_1 <- subset(wine,Type==1)
+type_2 <- subset(wine,Type==2)
+type_3 <- subset(wine,Type==3)
+lm_type_1 <- lm(type_1$Flavanoids ~ type_1$Phenols)
+lm_type_2 <- lm(type_2$Flavanoids ~ type_2$Phenols)
+lm_type_3 <- lm(type_3$Flavanoids ~ type_3$Phenols)
+ggplot(wine, aes(x=Phenols, y=Flavanoids, color = Type)) + geom_point() + geom_smooth(method = lm, se = FALSE)
+```
+
+
+```{r Q-1,i}
+coef(lm_type_1)
+coef(lm_type_2)
+coef(lm_type_3)
+```
+
+
+
+
+
+
+
+
+
+
+#2.b.
+```{r Q-2, b}
+library("ggplot2")
+lm_dif_sl_co <-lm(mpg ~ as.factor(cyl)*hp, data = mtcars)
+ggplot(mtcars, aes(x=hp, y=mpg, color=as.factor(cyl))) + geom_point() + geom_smooth(method = lm, se = FALSE)
+summary(lm_dif_sl_co)
+qqnorm(lm_dif_sl_co$residuals); qqline(lm_dif_sl_co$residuals)
+```
+```{r}
+lm_dif_co <-lm(mpg ~ as.factor(cyl) + hp, data = mtcars)
+summary(lm_dif_co)
+equation1 = function(x){coef(lm_dif_co)[4]*x+coef(lm_dif_co)[1]}
+equation2 = function(x){coef(lm_dif_co)[4]*x+coef(a)[1]+coef(lm_dif_co)[2]}
+equation3 = function(x){coef(lm_dif_co)[4]*x+coef(a)[1]+coef(lm_dif_co)[3]}
+library("ggplot2")
+ggplot(mtcars, aes(x=hp, y=mpg, color=as.factor(cyl))) + geom_point() + stat_function(fun=equation1,geom="line",color=scales::hue_pal()(2)[1]) + stat_function(fun=equation2,geom="line",color=scales::hue_pal()(2)[2]) + stat_function(fun=equation3,geom="line",color=scales::hue_pal()(2)[3])
+qqnorm(lm_dif_co$residuals); qqline(lm_dif_co$residuals)
+```
+```{r}
+library("ggplot2")
+lm_same <- lm(mpg ~ hp, data = mtcars)
+ggplot(mtcars, aes(x=hp, y=mpg)) + geom_point() + geom_smooth(method = lm, se = FALSE)
+summary(lm_same)
+qqnorm(lm_same$residuals); qqline(lm_same$residuals)
+```
+
+```{r}
+anova(lm_dif_sl_co,lm_dif_co, test='F')
+```
+
+
+
+#2.c.
+```{r Q-2, c}
+mt_db <- as.data.table(mtcars)
+auto_db <- mt_db[mt_db$am==0]
+auto_db$eng <- ifelse (auto_db$vs==0, " v-shaped", " straight")
+summary(lm(wt~eng , data = auto_db))
+#auto_db$vs <- as.factor(auto_db$vs)
+#plot(wt~as.factor(eng), data = auto_db)
+#lm_auto_vs <-lm(wt~vs, data = auto_db)
+#summary(lm_auto_vs)
+#ggplot(auto_db, aes(x=as.factor(eng), y=wt)) + geom_point() + geom_smooth(method = lm, se = FALSE)
+#qqnorm(lm_auto_vs$residuals); qqline(lm_auto_vs$residuals)
+```
+
+
+
+
+
+
+#3.a.
+```{r}
+wine_db <- wine
+wine_db$is_1 <- ifelse(wine_db$Type==1, 1, 0)
+step(glm(is_1~., data = wine_db, family = binomial))
+```
+
+
+#3.b.
+```{r}
+
+```
+
+
+
+
+
+
+
