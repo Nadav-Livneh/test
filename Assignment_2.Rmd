@@ -168,8 +168,12 @@ step(glm(is_1~., data = wine_db, family = binomial))
 
 #3.b.
 ```{r}
+<<<<<<< HEAD
 #nadav
 #this is worng
+=======
+abc<-function(x){print(5)}
+>>>>>>> f42fcaedd07ecbb8eb3dd89d1c64c8e72a3ad5a4
 ```
 
 git test
